@@ -1,5 +1,5 @@
-import { ObjectAPI } from './object/api'
+import { RenderAPI } from './systems/Render'
 
 export type TickContext = {
-  api: ObjectAPI
+  api: RenderAPI
 }

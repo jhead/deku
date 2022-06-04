@@ -1,6 +1,6 @@
 import { Component, ComponentName } from '.'
 import { Point } from '../../types/Geom'
-import { DiscreteMotionComponent, ObjectComponent, PositionComponent } from './systems'
+import { DiscreteMotionComponent, RenderComponent, PositionComponent } from './systems'
 import '../../types/ext'
 
 export type Entity = {
@@ -19,7 +19,7 @@ export namespace Entity {
     )
 
   export type BaseProps = {
-    obj: ObjectComponent
+    obj: RenderComponent
     pos: PositionComponent
   }
 

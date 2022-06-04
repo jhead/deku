@@ -1,7 +1,7 @@
-import { ObjectSystem } from './Object'
+import { RenderSystem } from './Render'
 import { PhysicsSystem } from './Physics'
 
-export const All = [ObjectSystem, PhysicsSystem]
+export const All = [RenderSystem, PhysicsSystem]
 
-export * from './Object'
+export * from './Render/RenderSystem'
 export * from './Physics'

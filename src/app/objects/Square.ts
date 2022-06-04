@@ -1,6 +1,6 @@
 import { Point } from '../../types/Geom'
 import { Entity } from '../../engine'
-import { ObjectComponent } from '../../engine/ecs/systems'
+import { RenderComponent } from '../../engine/ecs/systems'
 
 type SquareProps = {
   position?: Point
@@ -24,9 +24,10 @@ export class Square extends Entity.Rigid {
     })
   }
 
-  static createObject(): ObjectComponent {
-    return <ObjectComponent>{
-      componentName: 'Object',
+  static createObject(): RenderComponent {
+    return {
+      type: 'Component',
+      componentName: 'Render',
     }
   }
 }

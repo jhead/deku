@@ -1,28 +1,39 @@
-import { ObjectComponent } from '.'
+import { RenderComponent } from '.'
 import { Component, Entity, System, TickContext } from '..'
 import { Point } from '../../../types/Geom'
+import { RenderComponentName } from './Render'
 
+export const PositionComponentName = 'Position'
 export type PositionComponent = Component & {
-  componentName: 'Position'
+  componentName: typeof PositionComponentName
   position: Point
 }
 
+export const DiscreteMotionComponentName = 'DiscreteMotion'
 export type DiscreteMotionComponent = Component & {
-  componentName: 'DiscreteMotion'
+  componentName: typeof DiscreteMotionComponentName
   velocity: Point
 }
 
 export const PhysicsSystem: System = {
+  name: 'Physics',
+
   process(ctx: TickContext, entity: Entity) {
-    const [pos] = Entity.getComponent<PositionComponent>(entity, 'Position')
+    const [pos] = Entity.getComponent<PositionComponent>(
+      entity,
+      PositionComponentName
+    )
     if (!pos) return
 
-    const [obj] = Entity.getComponent<ObjectComponent>(entity, 'Object')
+    const [obj] = Entity.getComponent<RenderComponent>(
+      entity,
+      RenderComponentName
+    )
     if (!obj) return
 
     const [motion] = Entity.getComponent<DiscreteMotionComponent>(
       entity,
-      'DiscreteMotion'
+      DiscreteMotionComponentName
     )
 
     if (motion) {
