@@ -3,12 +3,12 @@ export type Scale = Scale.Static | Scale.Relative
 export namespace Scale {
   export type Static = {
     type: "static"
-    value: number
+    readonly value: number
   }
 
   export type Relative = {
     type: "relative"
-    value: number
+    readonly value: number
   }
 
   export const Relative = (value: number): Relative => ({
@@ -31,9 +31,9 @@ export namespace Scale {
     isStatic(val) ? val : Static(val.value * parent)
 }
 
-export type Size = {
-  width: Scale
-  height: Scale
+export type Size<S extends Scale = Scale> = {
+  readonly width: S
+  readonly height: S
 }
 
 export namespace Size {
@@ -44,10 +44,25 @@ export namespace Size {
 }
 
 export type Point = {
-  x: number
-  y: number
+  readonly x: number
+  readonly y: number
 }
 
 export namespace Point {
   export const Zero: Point = { x: 0, y: 0 }
+}
+
+export type Bounds = {
+  readonly pos: Point
+  readonly size: Size<Scale.Static>
+}
+
+export namespace Bounds {
+  export const Zero: Bounds = {
+    pos: Point.Zero,
+    size: {
+      width: Scale.Static(0),
+      height: Scale.Static(0),
+    }
+  }
 }
