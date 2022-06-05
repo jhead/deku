@@ -1,8 +1,9 @@
 import * as pixi from 'pixi.js'
-import { RenderEvent } from '../../engine/ecs/systems/Render'
+import { EntityEvent } from '../../engine/ecs/systems/Render'
 import { AppContext } from '../AppContext'
+import { PixiDraw } from './Draw'
 
-export type Reducer<T extends RenderEvent> = (
+export type Reducer<T extends EntityEvent> = (
   ctx: AppContext,
   view: pixi.Container,
   event: T
@@ -11,34 +12,28 @@ export type Reducer<T extends RenderEvent> = (
 type HasType<T extends string> = { type: T }
 type PickType<T> = T extends HasType<infer U> ? U : never
 type ReducerMap = {
-  [E in RenderEvent as PickType<E>]: Reducer<E>
+  [E in EntityEvent as PickType<E>]: Reducer<E>
 }
 
 export const Reducers: ReducerMap = {
-  AddObject: (ctx, view, { id, objectType }) => {
-    const obj = new pixi[objectType]()
-    view.addChild(obj)
-    ctx.entityToObject[id] = obj
+  AddObject: (ctx, view, { id, obj }) => {
+    const pixiObject = new PixiDraw(ctx, view).draw(obj)
+    ctx.entityToObject[id] = pixiObject
   },
 
   Transform: (ctx, _, event) => {
     const { id, position, positionDelta } = event
+    const obj = ctx.entityToObject[id]
+    if (!obj) return
+
     if (position) {
-      ctx.entityToObject[id].x = position.x
-      ctx.entityToObject[id].y = position.y
+      obj.x = position.x
+      obj.y = position.y
     }
 
     if (positionDelta) {
-      ctx.entityToObject[id].x += positionDelta.x
-      ctx.entityToObject[id].y += positionDelta.y
+      obj.x += positionDelta.x
+      obj.y += positionDelta.y
     }
-  },
-
-  RPC: (ctx, _, { id, fn, args }) => {
-    if (id) {
-      ctx.entityToObject[id][fn](...args)
-    } else {
-      ctx.app.view[fn](...args)
-    }
-  },
+  }, 
 }

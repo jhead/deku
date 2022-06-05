@@ -1,5 +1,5 @@
 import * as pixi from 'pixi.js'
-import { RenderEvent } from '../engine/ecs/systems/Render'
+import { EntityEvent } from '../engine/ecs/systems/Render'
 import { AppContext } from './AppContext'
 import { Reducer, Reducers } from './render/Reducers'
 
@@ -13,7 +13,7 @@ export const bootApplication = () => {
   document.getElementById('root').appendChild(app.view)
   app.start()
 
-  createWorker().onmessage = ({ data }: { data: RenderEvent }) => {
+  createWorker().onmessage = ({ data }: { data: EntityEvent }) => {
     const reducer = Reducers[data.type] as Reducer<typeof data>
     reducer(ctx, app.stage, data)
   }

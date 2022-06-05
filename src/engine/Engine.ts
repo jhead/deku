@@ -1,13 +1,13 @@
 import { Entity, System, Systems, TickContext } from './ecs'
-import { RenderEvent, RenderEventAPI } from './ecs/systems/Render'
+import { EntityEvent, EntityEventAPI } from './ecs/systems/Render'
 
 export const startEngine = (
   initialEntities: Entity[],
-  eventHandler: (event: RenderEvent) => void
+  eventHandler: (event: EntityEvent) => void
 ) => {
   const entities: Set<Entity> = new Set()
   const systems: System[] = [...Systems.All]
-  const api = new RenderEventAPI(eventHandler)
+  const api = new EntityEventAPI(eventHandler)
 
   const tick = () => {
     const ctx: TickContext = { api }

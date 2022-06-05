@@ -1,4 +1,4 @@
-import { Entity, Point } from '../../engine'
+import { Entity, Point, Scale } from '../../engine'
 import { RenderComponent } from '../../engine/ecs/systems'
 
 type SquareProps = { 
@@ -9,7 +9,7 @@ type SquareProps = {
 export class Square extends Entity.Rigid {
   constructor({ position = Point.Zero, velocity = Point.Zero }: SquareProps) {
     super({
-      obj: Square.createObject(),
+      obj: Square.createObject(position),
       pos: {
         type: 'Component',
         componentName: 'Position',
@@ -23,10 +23,22 @@ export class Square extends Entity.Rigid {
     })
   }
 
-  static createObject(): RenderComponent {
+  static createObject(pos: Point): RenderComponent {
     return {
       type: 'Component',
       componentName: 'Render',
+      obj: {
+        type: 'RenderObject',
+        pos,
+        visual: {
+          type: 'Rectangle',
+          size: {
+            width: Scale.Static(100),
+            height: Scale.Static(100),
+          },
+          fillColor: 0xff0000,
+        }
+      }
     }
   }
 }

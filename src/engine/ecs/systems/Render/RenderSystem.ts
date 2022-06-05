@@ -1,9 +1,11 @@
 import { Component, Entity, System, TickContext } from '../..'
+import { RenderObject } from './types'
 
 export const RenderComponentName = 'Render'
 
 export type RenderComponent = Component & {
   componentName: typeof RenderComponentName
+  obj: RenderObject
 }
 
 const entitySet: Set<string> = new Set()
@@ -14,27 +16,14 @@ export const RenderSystem: System = {
   process(ctx: TickContext, entity: Entity) {
     if (entitySet.has(entity.id)) return
 
-    Entity.getComponent<RenderComponent>(entity, RenderComponentName).forEach(
-      (comp) => {
-        ctx.api.addObject({
-          id: entity.id,
-          objectType: 'Graphics',
-        })
+    const [comp] = Entity.getComponent<RenderComponent>(entity, RenderComponentName)
+    if (!comp) return // TODO
 
-        ctx.api.rpc({
-          id: entity.id,
-          fn: 'beginFill',
-          args: [0xff0000],
-        })
-
-        ctx.api.rpc({
-          id: entity.id,
-          fn: 'drawRect',
-          args: [0, 0, 200, 100],
-        })
-
-        entitySet.add(entity.id)
-      }
-    )
+    console.log('adding obj', entity.id)
+    entitySet.add(entity.id)
+    ctx.api.addObject({
+      id: entity.id,
+      obj: comp.obj,
+    })
   },
 }
