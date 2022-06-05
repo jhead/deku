@@ -1,4 +1,4 @@
-import { Point } from '../../../../types/Geom'
+import { Point } from '../../..'
 
 export type RenderEvent =
   | RenderEvent.AddObject

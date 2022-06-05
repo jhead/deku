@@ -1,8 +1,7 @@
-import { Point } from '../../types/Geom'
-import { Entity } from '../../engine'
+import { Entity, Point } from '../../engine'
 import { RenderComponent } from '../../engine/ecs/systems'
 
-type SquareProps = {
+type SquareProps = { 
   position?: Point
   velocity?: Point
 }

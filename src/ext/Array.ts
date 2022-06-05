@@ -6,7 +6,6 @@ declare global {
   interface Array<T> {
     mapNotNull<R>(mapper: (item: T) => R | undefined | null): Array<R>
     filterInstanceOf<R>(check: (item: T) => boolean): Array<R>
-    fold<R>(initial: R, op: (acc: R, next: T) => R): R
     associate<A, K extends keyof any, V>(
       this: Array<A>,
       assoc: (A) => [K, V]
@@ -39,27 +38,13 @@ Array.prototype.filterInstanceOf = function <T, R>(
   return this.mapNotNull<R>((item) => item.cast<R>(check(item)))
 }
 
-safePatch(Array, 'fold')
-Array.prototype.fold = function <T, R>(
-  this: Array<T>,
-  initial: R,
-  op: (acc: R, next: T) => R
-): R {
-  const [first, ...rest] = this
-  let res: R = op(initial, first)
-  rest.forEach((it) => {
-    res = op(res, it)
-  })
-  return res
-}
-
 safePatch(Array, 'associate')
 Array.prototype.associate = function <A, K extends keyof any, V>(
   this: Array<A>,
   assoc: (A) => [K, V]
 ): Record<K, V> {
-  return this.fold(<Record<K, V>>{}, (acc, next) => {
+  return this.reduce((acc, next) => {
     const [key, value] = assoc(next)
     return { ...acc, [key]: value }
-  })
+  }, <Record<K, V>>{})
 }

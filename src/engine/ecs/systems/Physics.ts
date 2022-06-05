@@ -1,6 +1,5 @@
 import { RenderComponent } from '.'
-import { Component, Entity, System, TickContext } from '..'
-import { Point } from '../../../types/Geom'
+import { Component, Entity, Point, System, TickContext } from '../..'
 import { RenderComponentName } from './Render'
 
 export const PositionComponentName = 'Position'

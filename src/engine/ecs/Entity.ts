@@ -1,7 +1,7 @@
 import { Component, ComponentName } from '.'
-import { Point } from '../../types/Geom'
-import { DiscreteMotionComponent, RenderComponent, PositionComponent } from './systems'
-import '../../types/ext'
+import { Point } from '..'
+import { DiscreteMotionComponent, PositionComponent, RenderComponent } from './systems'
+import '../../ext'
 
 export type Entity = {
   readonly type: 'Entity'
