@@ -4,17 +4,12 @@ export interface IEvent {
   type: string
 }
 
-export type EventHandler<T extends IEvent> = (event: T) => void
+export type EventHandler<T> = (event: T) => void
 
-export class EventEmitter<T extends IEvent = IEvent> {
-  constructor(
-    private handlers: Record<string, EventHandler<T>[]> = {},
-  ) {}
+export class EventEmitter<T> {
+  constructor(private handlers: Record<string, EventHandler<T>[]> = {}) {}
 
-  addEventListener<U extends T>(
-    eventType: U['type'],
-    handler: EventHandler<U>,
-  ) {
+  addEventListener<U extends T>(eventType: string, handler: EventHandler<U>) {
     if (!(eventType in this.handlers)) {
       this.handlers[eventType] = []
     }
@@ -23,7 +18,7 @@ export class EventEmitter<T extends IEvent = IEvent> {
   }
 
   removeEventListener<U extends T>(
-    eventType: U['type'],
+    eventType: string,
     handler: EventHandler<U>,
   ) {
     const handlersForEvent = this.handlers[eventType] || []

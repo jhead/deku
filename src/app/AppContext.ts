@@ -1,11 +1,11 @@
 import * as pixi from 'pixi.js'
 import { EngineEvent } from '../api/event/EngineEventAPI'
-import { EventEmitter } from './EventEmitter'
+import { EventEmitter, IEvent } from '../api/EventEmitter'
 
 export type AppContext = {
   id: number,
   app: pixi.Application
-  eventing: EventEmitter<EngineEvent>
+  eventing: EventEmitter<IEvent>
   entityToObject: Record<string, pixi.DisplayObject>
 }
 

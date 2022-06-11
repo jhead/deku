@@ -5,7 +5,7 @@ import {
   RenderEvent,
 } from '../../api/event/EngineEventAPI'
 import { AppContext } from '../../app/AppContext'
-import { EventHandler } from '../../app/EventEmitter'
+import { EventHandler } from '../../api/EventEmitter'
 import { PixiDraw } from './Draw'
 import { RenderReducers } from './RenderReducers'
 
