@@ -1,2 +1,2 @@
-import { bootApplication } from './app'
+import { bootApplication } from './canvas'
 bootApplication()
