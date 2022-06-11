@@ -3,9 +3,9 @@ import { AppContext } from './AppContext'
 import { EventEmitter } from './EventEmitter'
 import { RenderAdapter } from './render/RenderAdapter'
 
-export const bootApplication = () => {
+export const createCanvas = (root: HTMLElement) => {
   const app = new pixi.Application()
-  document.getElementById('root').appendChild(app.view)
+  root.appendChild(app.view)
   app.start()
 
   const ctx: AppContext = {
