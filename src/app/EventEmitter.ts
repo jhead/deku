@@ -40,7 +40,6 @@ export class EventEmitter<T extends IEvent = IEvent> {
   }
 
   private emitToHandler(event: T, handler: EventHandler<T>) {
-    console.debug('emit', event)
     setTimeout(() => handler(event), 0)
   }
 }

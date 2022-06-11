@@ -1,19 +1,19 @@
 import { AppContext } from '../AppContext'
 
-let currentWorker: Worker
+const loadedWorkers: Worker[] = []
 
 export const createWorker = (ctx: AppContext) => {
-  stopWorker()
-  currentWorker = loadWorker()
-  currentWorker.onmessage = handleMessageFromWorker(ctx)
-  return currentWorker
+  const worker = loadWorker()
+  worker.onmessage = handleMessageFromWorker(ctx)
+  loadedWorkers.push(worker)
+  return worker
 }
 
-export const stopWorker = () => {
-  if (currentWorker) {
-    console.debug('Killing existing worker', currentWorker)
-    currentWorker.terminate()
-  }
+export const stopAllWorkers = () => {
+  loadedWorkers.forEach((worker) => {
+    console.debug('Killing existing worker', worker)
+    worker.terminate()
+  })
 }
 
 const loadWorker = (): Worker =>
@@ -24,6 +24,5 @@ const loadWorker = (): Worker =>
 const handleMessageFromWorker =
   (ctx: AppContext) =>
   ({ data }: MessageEvent) => {
-    console.debug('msg from worker', data)
     ctx.eventing.emit(data.type, data)
   }
