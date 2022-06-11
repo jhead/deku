@@ -11,7 +11,7 @@ declare global {
     cast<T>(check: CallByName<boolean>): T | undefined
   }
 
-  function cast<T>(val: any, check: () => boolean): val is T
+  function cast<T>(val: any, check: CallByName<boolean>): val is T
 }
 
 safePatch(Object, 'cast')
