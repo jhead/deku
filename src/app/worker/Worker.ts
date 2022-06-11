@@ -1,11 +1,6 @@
 import { Square } from '../../api/obj/Square'
+import { Scale } from '../../api/types/Geom'
 import { Engine } from '../../engine'
-
-// TODO
-const testEntities = [
-  new Square({ position: { x: 50, y: 50 } }),
-  new Square({ velocity: { x: 1, y: 1 } }),
-]
 
 console.debug('worker loaded')
 
@@ -13,12 +8,7 @@ const startEngine = () => {
   const engine = new Engine()
 
   // TODO
-  testEntities.forEach((entity) => {
-    engine.sendCommand({
-      type: 'PutEntity',
-      entity,
-    })
-  })
+  createTestEntities(engine)
 
   engine.onEngineEvent((event) => postMessage(event))
 
@@ -28,6 +18,26 @@ const startEngine = () => {
   }
 
   engine.start()
+}
+
+const createTestEntities = (engine: Engine) => {
+  setInterval(() => {
+    const size = Scale.Static(5 + (Math.random() * 25))
+
+    engine.sendCommand({
+      type: 'PutEntity',
+      entity: new Square({
+        size: {
+          width: size,
+          height: size,
+        },
+        velocity: {
+          x: Math.random() * 3,
+          y: Math.random() * 3,
+        },
+      }),
+    })
+  }, 500)
 }
 
 startEngine()
