@@ -1,5 +1,5 @@
 import * as pixi from 'pixi.js'
-import { EngineEvent } from '../api/event/EngineEventAPI
+import { EngineEvent } from '../api/event/EngineEventAPI'
 import { EventEmitter } from './EventEmitter'
 
 export type AppContext = {
