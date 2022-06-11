@@ -1,3 +1,3 @@
-import { createApp } from './app'
+import { createApp } from './ui'
 
 createApp(document.getElementById('root'))

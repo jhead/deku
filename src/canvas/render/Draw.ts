@@ -1,6 +1,6 @@
 import * as pixi from 'pixi.js'
-import { Rectangle, RenderObject } from '../../engine/ecs/systems/Render/types'
-import { AppContext } from '../AppContext'
+import { Rectangle, RenderObject } from '../../api/types/Render'
+import { AppContext } from '../../app/AppContext'
 
 export interface Draw<T = any> {
   draw(obj: RenderObject): T
@@ -29,7 +29,7 @@ export class PixiDraw implements Draw<pixi.DisplayObject> {
       obj.pos.x,
       obj.pos.y,
       rect.size.width.value,
-      rect.size.height.value
+      rect.size.height.value,
     )
     view.addChild(display)
 

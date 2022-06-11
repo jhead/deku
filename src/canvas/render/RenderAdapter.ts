@@ -3,9 +3,9 @@ import {
   EngineEvent,
   EntityEvent,
   RenderEvent,
-} from '../../engine/ecs/systems/Render'
-import { AppContext } from '../AppContext'
-import { EventHandler } from '../EventEmitter'
+} from '../../api/event/EngineEventAPI'
+import { AppContext } from '../../app/AppContext'
+import { EventHandler } from '../../app/EventEmitter'
 import { PixiDraw } from './Draw'
 import { RenderReducers } from './RenderReducers'
 

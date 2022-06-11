@@ -1,10 +1,7 @@
-import { Component } from '../../engine'
-import {
-  ComponentDelta,
-  EntityEvent,
-  PositionComponent,
-} from '../../engine/ecs/systems'
-import { AppContext } from '../AppContext'
+import { PositionComponent } from '../../api/builtin/Physics'
+import { Component } from '../../api/ecs/Component'
+import { ComponentDelta, EntityEvent } from '../../api/event/EngineEventAPI'
+import { AppContext } from '../../app/AppContext'
 
 type ComponentReducer<T extends Component> = (
   ctx: AppContext,
@@ -18,7 +15,7 @@ const updatePositionReducer: ComponentReducer<PositionComponent> = (
   delta: ComponentDelta<PositionComponent>,
 ) => {
   const { position } = delta
-  
+
   const obj = ctx.entityToObject[event.id]
   if (!obj) return
 

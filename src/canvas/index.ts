@@ -1,21 +1,9 @@
-import * as pixi from 'pixi.js'
-import { AppContext } from './AppContext'
-import { EventEmitter } from './EventEmitter'
+import { AppContext } from '../app/AppContext'
 import { RenderAdapter } from './render/RenderAdapter'
 
-export const createCanvas = (root: HTMLElement) => {
-  const app = new pixi.Application()
-  root.appendChild(app.view)
-  app.start()
-
-  const ctx: AppContext = {
-    app,
-    eventing: new EventEmitter(),
-    entityToObject: {},
-  }
-
+export const createCanvas = (ctx: AppContext, root: HTMLElement) => {
+  root.appendChild(ctx.app.view)
   RenderAdapter.registerEventHandlers(ctx)
-
   createWorker().onmessage = handleMessageFromWorker(ctx)
 }
 
