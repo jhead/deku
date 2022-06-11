@@ -1,14 +1,19 @@
 import { RenderAdapter } from '../canvas/render/RenderAdapter'
 import { AppContext, newAppContext } from './AppContext'
 import { createWorker, stopAllWorkers } from './worker'
+import { WorkerBridge } from './worker/WorkerBridge'
 
 export const startApplication = (
   ctx: AppContext = newAppContext(),
 ): AppContext => {
   console.log('Starting app', ctx)
+  
   stopAllWorkers()
-  createWorker(ctx)
+  const worker = createWorker(ctx)
+  
   RenderAdapter.registerEventHandlers(ctx)
+  WorkerBridge.registerEventHandlers(worker, ctx)
+  
   ctx.app.start()
   return ctx
 }

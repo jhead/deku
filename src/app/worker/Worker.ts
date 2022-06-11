@@ -1,5 +1,5 @@
-import { startEngine } from '../../engine'
 import { Square } from '../../canvas/objects/Square'
+import { Engine } from '../../engine'
 
 onmessage = (event) => {
   console.log('worker msg: ', event)
@@ -12,4 +12,11 @@ const testEntities = [
 ]
 
 console.debug('worker loaded')
-startEngine(testEntities, (event) => postMessage(event))
+
+const startEngine = () => {
+  const engine = new Engine(new Set(testEntities))
+  engine.onEngineEvent((event) => postMessage(event))
+  engine.start()
+}
+
+startEngine()
