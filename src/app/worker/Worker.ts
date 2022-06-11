@@ -1,5 +1,5 @@
 import { startEngine } from '../../engine'
-import { Square } from '../objects/Square'
+import { Square } from '../../canvas/objects/Square'
 
 onmessage = (event) => {
   console.log('worker msg: ', event)
@@ -11,4 +11,5 @@ const testEntities = [
   new Square({ velocity: { x: 1, y: 1 } }),
 ]
 
+console.debug('worker loaded')
 startEngine(testEntities, (event) => postMessage(event))

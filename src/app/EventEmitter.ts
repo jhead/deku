@@ -8,7 +8,7 @@ export type EventHandler<T extends IEvent> = (event: T) => void
 
 export class EventEmitter<T extends IEvent = IEvent> {
   constructor(
-    private readonly handlers: Record<string, EventHandler<T>[]> = {},
+    private handlers: Record<string, EventHandler<T>[]> = {},
   ) {}
 
   addEventListener<U extends T>(
@@ -30,12 +30,17 @@ export class EventEmitter<T extends IEvent = IEvent> {
     this.handlers[eventType] = handlersForEvent.filter((it) => it !== handler)
   }
 
+  clear() {
+    this.handlers = {}
+  }
+
   emit(eventType: string, event: T) {
     const handlersForEvent = this.handlers[eventType] || []
     handlersForEvent.forEach((handler) => this.emitToHandler(event, handler))
   }
 
   private emitToHandler(event: T, handler: EventHandler<T>) {
+    console.debug('emit', event)
     setTimeout(() => handler(event), 0)
   }
 }

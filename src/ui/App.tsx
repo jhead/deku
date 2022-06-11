@@ -5,7 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { AppContext, createApplication } from '../app/AppContext'
+import { AppContext } from '../app/AppContext'
+import { startApplication, stopApplication } from '../app/Deku'
 import { createCanvas } from '../canvas'
 import { Editor } from './editor/Editor'
 
@@ -23,10 +24,9 @@ export const App: React.FC = () => {
 }
 
 const AppContextManager: React.FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [ctx, setContext] = useState<AppContext>(createApplication())
+  const [ctx, setContext] = useState<AppContext>(startApplication)
 
   const onMount = () => onUnmount
-
   const onUnmount = () => {
     if (ctx.app.stage) {
       restartApplication()
@@ -34,8 +34,8 @@ const AppContextManager: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   }
 
   const restartApplication = () => {
-    ctx.app.destroy()
-    setContext(createApplication())
+    stopApplication(ctx)
+    setContext(startApplication())
   }
 
   useEffect(onMount)
