@@ -1,3 +1,3 @@
 export * from './types'
-export * from './EntityAPI'
+export * from './EngineEventAPI'
 export * from './RenderSystem'

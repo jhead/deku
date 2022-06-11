@@ -9,7 +9,7 @@ type SquareProps = {
 export class Square extends Entity.Rigid {
   constructor({ position = Point.Zero, velocity = Point.Zero }: SquareProps) {
     super({
-      obj: Square.createObject(position),
+      obj: Square.createObject(),
       pos: {
         type: 'Component',
         componentName: 'Position',
@@ -23,13 +23,13 @@ export class Square extends Entity.Rigid {
     })
   }
 
-  static createObject(pos: Point): RenderComponent {
+  static createObject(): RenderComponent {
     return {
       type: 'Component',
       componentName: 'Render',
       obj: {
         type: 'RenderObject',
-        pos,
+        pos: Point.Zero,
         visual: {
           type: 'Rectangle',
           size: {

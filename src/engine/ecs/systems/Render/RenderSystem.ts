@@ -21,7 +21,8 @@ export const RenderSystem: System = {
 
     console.log('adding obj', entity.id)
     entitySet.add(entity.id)
-    ctx.api.addObject({
+    ctx.api.emit({
+      type: 'PutObject',
       id: entity.id,
       obj: comp.obj,
     })

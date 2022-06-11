@@ -1,5 +1,5 @@
-import { EntityAPI } from './systems/Render'
+import { EngineEventAPI } from './systems/Render'
 
 export type TickContext = {
-  api: EntityAPI
+  api: EngineEventAPI
 }

@@ -1,25 +1,30 @@
 import * as pixi from 'pixi.js'
-import { EntityEvent } from '../engine/ecs/systems/Render'
 import { AppContext } from './AppContext'
-import { Reducer, Reducers } from './render/Reducers'
-
-const app = new pixi.Application()
-const ctx: AppContext = {
-  app,
-  entityToObject: {},
-}
+import { EventEmitter } from './EventEmitter'
+import { RenderAdapter } from './render/RenderAdapter'
 
 export const bootApplication = () => {
+  const app = new pixi.Application()
   document.getElementById('root').appendChild(app.view)
   app.start()
 
-  createWorker().onmessage = ({ data }: { data: EntityEvent }) => {
-    const reducer = Reducers[data.type] as Reducer<typeof data>
-    reducer(ctx, app.stage, data)
+  const ctx: AppContext = {
+    app,
+    eventing: new EventEmitter(),
+    entityToObject: {},
   }
+
+  RenderAdapter.registerEventHandlers(ctx)
+
+  createWorker().onmessage = handleMessageFromWorker(ctx)
 }
 
 const createWorker = (): Worker =>
   new Worker(new URL('./worker/worker.ts', import.meta.url), {
     type: 'module',
   })
+
+const handleMessageFromWorker =
+  (ctx: AppContext) =>
+  ({ data }: MessageEvent) =>
+    ctx.eventing.emit(data.type, data)

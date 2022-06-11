@@ -1,5 +1,6 @@
 import { Component, Entity, Point, System, TickContext } from '../..'
 import { updatedDiff } from 'deep-object-diff'
+import { ComponentDelta } from '.'
 
 export const PositionComponentName = 'Position'
 export type PositionComponent = Component & {
@@ -37,7 +38,7 @@ export const PhysicsSystem: System = {
     if (motion) {
       pos.position = {
         x: pos.position.x + motion.velocity.x,
-        y: pos.position.y + motion.velocity.y
+        y: pos.position.y + motion.velocity.y,
       }
     }
 
@@ -51,12 +52,20 @@ export const PhysicsSystem: System = {
       newState
     )
 
+    const delta: ComponentDelta[] = []
+
     if ('position' in stateDiff) {
-      ctx.api.transform({
-        id: entity.id,
-        position: stateDiff.position 
+      delta.push(<ComponentDelta<PositionComponent>>{
+        componentName: PositionComponentName,
+        position: stateDiff.position,
       })
     }
+
+    ctx.api.emit({
+      type: 'EntityUpdate',
+      id: entity.id,
+      delta,
+    })
 
     entityStates[entity.id] = newState
   },
