@@ -1,5 +1,5 @@
-import { Component } from '../../..'
-import { RenderObject } from './types'
+import { Component } from '../ecs/Component'
+import { RenderObject } from '../types/Render'
 
 export type EngineEvent = EntityEvent | RenderEvent
 

@@ -1,7 +1,8 @@
-import { Entity, Point, Scale } from '../../engine'
-import { RenderComponent } from '../../engine/ecs/systems'
+import { Point, Scale } from '../../api/types/Geom'
+import { Entity } from '../../engine/ecs/Entity'
+import { RenderComponent } from '../../engine/ecs/systems/Render'
 
-type SquareProps = { 
+type SquareProps = {
   position?: Point
   velocity?: Point
 }
@@ -37,8 +38,8 @@ export class Square extends Entity.Rigid {
             height: Scale.Static(100),
           },
           fillColor: 0xff0000,
-        }
-      }
+        },
+      },
     }
   }
 }

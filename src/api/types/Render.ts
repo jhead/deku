@@ -1,4 +1,4 @@
-import { Bounds, Point, Scale, Size } from '../../../types/Geom'
+import { Bounds, Point, Scale, Size } from './Geom'
 
 /** A thing that can be rendered */
 export type RenderObject = {

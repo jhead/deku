@@ -1,12 +1,15 @@
-import { Entity, System, Systems, TickContext } from './ecs'
-import { EngineEvent, EngineEventAPI } from './ecs/systems/Render'
+import { Entity } from '../api/ecs/Entity'
+import { System } from '../api/ecs/System'
+import { TickContext } from '../api/ecs/Tick'
+import { EngineEvent, EngineEventAPI } from '../api/event/EngineEventAPI'
+import { AllSystems } from './ecs/systems'
 
 export const startEngine = (
   initialEntities: Entity[],
-  eventHandler: (event: EngineEvent) => void
+  eventHandler: (event: EngineEvent) => void,
 ) => {
   const entities: Set<Entity> = new Set()
-  const systems: System[] = [...Systems.All]
+  const systems: System[] = [...AllSystems]
   const api = new EngineEventAPI.Default(eventHandler)
 
   const tick = () => {
@@ -15,7 +18,7 @@ export const startEngine = (
     systems.forEach((sys) =>
       entities.forEach((entity) => {
         sys.process(ctx, entity)
-      })
+      }),
     )
   }
 

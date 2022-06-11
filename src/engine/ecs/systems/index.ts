@@ -1,7 +1,5 @@
 import { RenderSystem } from './Render'
 import { PhysicsSystem } from './Physics'
+import { System } from '../../../api/ecs/System'
 
-export const All = [PhysicsSystem, RenderSystem]
-
-export * from './Physics'
-export * from './Render'
+export const AllSystems: readonly System[] = [PhysicsSystem, RenderSystem]

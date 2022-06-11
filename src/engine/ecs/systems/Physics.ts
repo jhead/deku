@@ -1,18 +1,15 @@
-import { Component, Entity, Point, System, TickContext } from '../..'
 import { updatedDiff } from 'deep-object-diff'
-import { ComponentDelta } from '.'
-
-export const PositionComponentName = 'Position'
-export type PositionComponent = Component & {
-  componentName: typeof PositionComponentName
-  position: Point
-}
-
-export const DiscreteMotionComponentName = 'DiscreteMotion'
-export type DiscreteMotionComponent = Component & {
-  componentName: typeof DiscreteMotionComponentName
-  velocity: Point
-}
+import {
+  DiscreteMotionComponent,
+  DiscreteMotionComponentName,
+  PositionComponent,
+  PositionComponentName,
+} from '../../../api/builtin/Physics'
+import { System } from '../../../api/ecs/System'
+import { TickContext } from '../../../api/ecs/Tick'
+import { ComponentDelta } from '../../../api/event/EngineEventAPI'
+import { Point } from '../../../api/types/Geom'
+import { Entity } from '../Entity'
 
 // TODO: move to something more centralized on the ctx?
 const entityStates: Record<string, EntityState> = {}
@@ -26,13 +23,13 @@ export const PhysicsSystem: System = {
   process(ctx: TickContext, entity: Entity) {
     const [pos] = Entity.getComponent<PositionComponent>(
       entity,
-      PositionComponentName
+      PositionComponentName,
     )
     if (!pos) return
 
     const [motion] = Entity.getComponent<DiscreteMotionComponent>(
       entity,
-      DiscreteMotionComponentName
+      DiscreteMotionComponentName,
     )
 
     if (motion) {
@@ -49,7 +46,7 @@ export const PhysicsSystem: System = {
 
     const stateDiff: Partial<EntityState> = updatedDiff(
       entityStates[entity.id],
-      newState
+      newState,
     )
 
     const delta: ComponentDelta[] = []

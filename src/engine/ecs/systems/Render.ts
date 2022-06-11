@@ -1,5 +1,8 @@
-import { Component, Entity, System, TickContext } from '../..'
-import { RenderObject } from './types'
+import { Component } from '../../../api/ecs/Component'
+import { System } from '../../../api/ecs/System'
+import { TickContext } from '../../../api/ecs/Tick'
+import { RenderObject } from '../../../api/types/Render'
+import { Entity } from '../Entity'
 
 export const RenderComponentName = 'Render'
 
@@ -16,7 +19,10 @@ export const RenderSystem: System = {
   process(ctx: TickContext, entity: Entity) {
     if (entitySet.has(entity.id)) return
 
-    const [comp] = Entity.getComponent<RenderComponent>(entity, RenderComponentName)
+    const [comp] = Entity.getComponent<RenderComponent>(
+      entity,
+      RenderComponentName,
+    )
     if (!comp) return // TODO
 
     console.log('adding obj', entity.id)

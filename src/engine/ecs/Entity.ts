@@ -1,21 +1,20 @@
-import { Component, ComponentName } from '.'
-import { Point } from '..'
-import { DiscreteMotionComponent, PositionComponent, RenderComponent } from './systems'
+import { Component, ComponentName } from '../../api/ecs/Component'
+import type { Entity as EntityType } from '../../api/ecs/Entity'
+import { Point } from '../../api/types/Geom'
 import '../../ext'
-
-export type Entity = {
-  readonly type: 'Entity'
-  readonly id: string
-  readonly components: Component[]
-}
+import { RenderComponent } from './systems/Render'
+import {
+  DiscreteMotionComponent,
+  PositionComponent,
+} from '../../api/builtin/Physics'
 
 export namespace Entity {
   export const getComponent = <T extends Component>(
-    entity: Entity,
-    componentName: ComponentName<T>
+    entity: EntityType,
+    componentName: ComponentName<T>,
   ): T[] =>
     entity.components.filterInstanceOf(
-      (comp) => comp.componentName === componentName
+      (comp) => comp.componentName === componentName,
     )
 
   export type BaseProps = {
@@ -23,7 +22,7 @@ export namespace Entity {
     pos: PositionComponent
   }
 
-  export class Base implements Entity {
+  export class Base implements EntityType {
     readonly type: 'Entity'
     readonly id: string = `${globalEntityCount++}`
     readonly components: Component[] = []
@@ -44,6 +43,8 @@ export namespace Entity {
     }
   }
 }
+
+export type Entity = EntityType
 
 // TODO
 let globalEntityCount = 0
