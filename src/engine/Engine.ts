@@ -10,8 +10,17 @@ import { EventEmitter } from '../api/EventEmitter'
 import { CommandReducers } from './cmd/CommandRedcuers'
 import { AllSystems } from './ecs/systems'
 
+type EntityMap = Record<string, Entity>
+
+export type EngineState = {
+  readonly entities: EntityMap
+}
+
+const initialState = (): EngineState => ({
+  entities: {},
+})
+
 export class Engine {
-  private readonly entities: Record<string, Entity> = {}
   private readonly systems: System[] = [...AllSystems]
   private readonly internalApi: EngineEventAPI
   private readonly emitter: EventEmitter<EngineEvent> = new EventEmitter()
@@ -20,7 +29,7 @@ export class Engine {
   private running: boolean = false
   private tickIntervalRef: number
 
-  constructor() {
+  constructor(private readonly state: EngineState = initialState()) {
     this.internalApi = new EngineEventAPI.Default((event) =>
       this.emitter.emit('Outbound', event),
     )
@@ -55,8 +64,14 @@ export class Engine {
     this.commandQueue.push(cmd)
   }
 
+  public get currentState(): EngineState {
+    return { ...this.state }
+  }
+
   private tick() {
-    const { systems, entities, commandQueue } = this
+    const { systems, state, commandQueue } = this
+    const { entities } = state
+
     const ctx: TickContext = {
       api: this.internalApi,
       entities,
@@ -73,8 +88,9 @@ export class Engine {
       }
     }
 
+    const entitySet = Object.values(entities)
     systems.forEach((sys) =>
-      Object.values(entities).forEach((entity) => {
+      entitySet.forEach((entity) => {
         sys.process(ctx, entity)
       }),
     )

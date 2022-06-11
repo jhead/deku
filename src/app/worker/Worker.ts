@@ -1,11 +1,16 @@
 import { Square } from '../../api/obj/Square'
 import { Scale } from '../../api/types/Geom'
-import { Engine } from '../../engine'
+import { Engine, EngineState } from '../../engine'
+import { connectDatabase, loadEngineState, storeEngineState } from './StateDB'
 
 console.debug('worker loaded')
 
-const startEngine = () => {
-  const engine = new Engine()
+const startEngine = async () => {
+  const db = await connectDatabase()
+  const initialState = await loadEngineState(db)
+
+  const engine = new Engine(initialState)
+  setInterval(() => storeEngineState(db, engine), 500)
 
   // TODO
   createTestEntities(engine)
@@ -22,7 +27,7 @@ const startEngine = () => {
 
 const createTestEntities = (engine: Engine) => {
   setInterval(() => {
-    const size = Scale.Static(5 + (Math.random() * 25))
+    const size = Scale.Static(5 + Math.random() * 25)
 
     engine.sendCommand({
       type: 'PutEntity',

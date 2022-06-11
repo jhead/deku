@@ -20,7 +20,7 @@ export const RenderSystem: System = {
     )
     if (!comp) return // TODO
 
-    console.log('adding obj', entity.id)
+    console.debug('adding obj', entity.id)
     entitySet.add(entity.id)
     ctx.api.emit({
       type: 'PutObject',
