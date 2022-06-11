@@ -29,7 +29,7 @@ export class EventEmitter<T> {
     this.handlers = {}
   }
 
-  emit(eventType: string, event: T) {
+  emit<U extends T>(eventType: string, event: U) {
     const handlersForEvent = this.handlers[eventType] || []
     handlersForEvent.forEach((handler) => this.emitToHandler(event, handler))
   }

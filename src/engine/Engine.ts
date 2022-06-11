@@ -1,21 +1,26 @@
 import { Entity } from '../api/ecs/Entity'
 import { System } from '../api/ecs/System'
 import { TickContext } from '../api/ecs/Tick'
-import { EngineEvent, EngineEventAPI } from '../api/event/EngineEventAPI'
+import {
+  EngineCommand,
+  EngineEvent,
+  EngineEventAPI,
+} from '../api/event/EngineEventAPI'
 import { EventEmitter } from '../api/EventEmitter'
+import { CommandReducers } from './cmd/CommandRedcuers'
 import { AllSystems } from './ecs/systems'
 
 export class Engine {
+  private readonly entities: Record<string, Entity> = {}
+  private readonly systems: System[] = [...AllSystems]
   private readonly internalApi: EngineEventAPI
   private readonly emitter: EventEmitter<EngineEvent> = new EventEmitter()
+  private readonly commandQueue: EngineCommand[] = []
 
   private running: boolean = false
   private tickIntervalRef: number
 
-  constructor(
-    private readonly entities: Set<Entity> = new Set(),
-    private readonly systems: System[] = [...AllSystems],
-  ) {
+  constructor() {
     this.internalApi = new EngineEventAPI.Default((event) =>
       this.emitter.emit('Outbound', event),
     )
@@ -46,12 +51,30 @@ export class Engine {
     this.emitter.addEventListener('Outbound', handler)
   }
 
+  sendCommand(cmd: EngineCommand) {
+    this.commandQueue.push(cmd)
+  }
+
   private tick() {
-    const { systems, entities } = this
-    const ctx: TickContext = { api: this.internalApi }
+    const { systems, entities, commandQueue } = this
+    const ctx: TickContext = {
+      api: this.internalApi,
+      entities,
+    }
+
+    while (commandQueue.length > 0) {
+      const cmd = commandQueue.shift()
+      const reducer = CommandReducers[cmd.type]
+
+      if (reducer) {
+        reducer(ctx, cmd)
+      } else {
+        console.warn('Unknown engine command', cmd)
+      }
+    }
 
     systems.forEach((sys) =>
-      entities.forEach((entity) => {
+      Object.values(entities).forEach((entity) => {
         sys.process(ctx, entity)
       }),
     )

@@ -1,4 +1,5 @@
 import { Component } from '../ecs/Component'
+import { Entity } from '../../api/ecs/Entity'
 import { RenderObject } from '../types/Render'
 
 export type EngineEvent = EntityEvent | RenderEvent
@@ -35,5 +36,13 @@ export type EngineEventAPI = {
 export namespace EngineEventAPI {
   export class Default implements EngineEventAPI {
     constructor(readonly emit: (event: EngineEvent) => void) {}
+  }
+}
+
+export type EngineCommand = EntityCommand.PutEntity
+
+export namespace EntityCommand {
+  export type PutEntity = BaseEvent<'PutEntity'> & {
+    entity: Omit<Entity, 'id'>
   }
 }

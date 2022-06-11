@@ -5,11 +5,11 @@ import {
   PositionComponent,
   PositionComponentName,
 } from '../../../api/builtin/Physics'
+import { Entity } from '../../../api/ecs/Entity'
 import { System } from '../../../api/ecs/System'
 import { TickContext } from '../../../api/ecs/Tick'
 import { ComponentDelta } from '../../../api/event/EngineEventAPI'
 import { Point } from '../../../api/types/Geom'
-import { Entity } from '../Entity'
 
 // TODO: move to something more centralized on the ctx?
 const entityStates: Record<string, EntityState> = {}

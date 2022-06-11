@@ -1,15 +1,10 @@
-import { Component } from '../../../api/ecs/Component'
+import {
+  RenderComponent,
+  RenderComponentName,
+} from '../../../api/builtin/Render'
+import { Entity } from '../../../api/ecs/Entity'
 import { System } from '../../../api/ecs/System'
 import { TickContext } from '../../../api/ecs/Tick'
-import { RenderObject } from '../../../api/types/Render'
-import { Entity } from '../Entity'
-
-export const RenderComponentName = 'Render'
-
-export type RenderComponent = Component & {
-  componentName: typeof RenderComponentName
-  obj: RenderObject
-}
 
 const entitySet: Set<string> = new Set()
 

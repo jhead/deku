@@ -1,16 +1,21 @@
-import { Point, Scale } from '../../api/types/Geom'
-import { Entity } from '../../engine/ecs/Entity'
-import { RenderComponent } from '../../engine/ecs/systems/Render'
+import { Point, Scale } from '../types/Geom'
+import { Entity } from '../ecs/Entity'
+import { RenderComponent } from '../builtin/Render'
 
 type SquareProps = {
   position?: Point
   velocity?: Point
+  color?: number
 }
 
 export class Square extends Entity.Rigid {
-  constructor({ position = Point.Zero, velocity = Point.Zero }: SquareProps) {
+  constructor({
+    position = Point.Zero,
+    velocity = Point.Zero,
+    color = Square.randomColor(),
+  }: SquareProps) {
     super({
-      obj: Square.createObject(),
+      obj: Square.createObject(color),
       pos: {
         type: 'Component',
         componentName: 'Position',
@@ -20,11 +25,11 @@ export class Square extends Entity.Rigid {
         type: 'Component',
         componentName: 'DiscreteMotion',
         velocity,
-      },
+      }
     })
   }
 
-  static createObject(): RenderComponent {
+  static createObject(color: number): RenderComponent {
     return {
       type: 'Component',
       componentName: 'Render',
@@ -37,9 +42,18 @@ export class Square extends Entity.Rigid {
             width: Scale.Static(100),
             height: Scale.Static(100),
           },
-          fillColor: 0xff0000,
+          fillColor: color,
         },
       },
     }
+  }
+
+  static randomColor(): number {
+    const rand = () => Math.round(Math.random() * 255)
+    return (
+      (rand() << 16) +
+      (rand() << 8) +
+      (rand())
+    )
   }
 }

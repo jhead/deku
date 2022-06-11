@@ -1,9 +1,5 @@
-import { Square } from '../../canvas/objects/Square'
+import { Square } from '../../api/obj/Square'
 import { Engine } from '../../engine'
-
-onmessage = (event) => {
-  console.log('worker msg: ', event)
-}
 
 // TODO
 const testEntities = [
@@ -14,8 +10,23 @@ const testEntities = [
 console.debug('worker loaded')
 
 const startEngine = () => {
-  const engine = new Engine(new Set(testEntities))
+  const engine = new Engine()
+
+  // TODO
+  testEntities.forEach((entity) => {
+    engine.sendCommand({
+      type: 'PutEntity',
+      entity,
+    })
+  })
+
   engine.onEngineEvent((event) => postMessage(event))
+
+  self.onmessage = ({ data }) => {
+    console.debug('worker msg: ', data)
+    engine.sendCommand(data)
+  }
+
   engine.start()
 }
 
