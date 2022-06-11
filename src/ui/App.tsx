@@ -3,7 +3,7 @@ import React, {
   useContext,
   useEffect,
   useRef,
-  useState
+  useState,
 } from 'react'
 import { AppContext, createApplication } from '../app/AppContext'
 import { createCanvas } from '../canvas'
@@ -22,26 +22,30 @@ export const App: React.FC = () => {
   )
 }
 
-export const AppContextManager: React.FC<PropsWithChildren<{}>> = ({
-  children,
-}) => {
+const AppContextManager: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [ctx, setContext] = useState<AppContext>(createApplication())
 
-  useEffect(() => {
-    return () => {
-      if (ctx.app.stage) {
-        ctx.app.destroy()
-        setContext(createApplication())
-      }
+  const onMount = () => onUnmount
+
+  const onUnmount = () => {
+    if (ctx.app.stage) {
+      restartApplication()
     }
-  })
+  }
+
+  const restartApplication = () => {
+    ctx.app.destroy()
+    setContext(createApplication())
+  }
+
+  useEffect(onMount)
 
   return (
     <ReactAppContext.Provider value={ctx}>{children}</ReactAppContext.Provider>
   )
 }
 
-export const Canvas: React.FC = () => {
+const Canvas: React.FC = () => {
   const ref = useRef<HTMLDivElement>()
   const [loaded, setLoaded] = useState(false)
   const ctx = useContext(ReactAppContext)
