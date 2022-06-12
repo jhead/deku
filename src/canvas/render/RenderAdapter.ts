@@ -33,7 +33,7 @@ const handlePutObject: EngineEventHandler<RenderEvent.PutObject> =
     pixiObject.interactive = true
 
     const onInteract = (eventType: string) => (event: any) => {
-      console.log(event.data)
+      // TODO: jank
       ctx.eventing.emit<EntityCommand.Interact>('Worker', {
         type: 'EntityInteract',
         id,
@@ -79,6 +79,7 @@ export namespace RenderAdapter {
     ctx.eventing.addEventListener('EntityUpdate', handleEntityUpdate(ctx))
     ctx.eventing.addEventListener('CullEntity', handleCullEntity(ctx))
 
+    // TODO: move this
     ctx.app.stage.interactive = true
     ctx.app.stage.on('pointermove', ({ data }) => {
       ctx.eventing.emit<EntityCommand.Interact>('Worker', {

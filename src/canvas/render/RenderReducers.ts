@@ -19,12 +19,9 @@ const updatePositionReducer: ComponentReducer<PositionComponent> = (
   const obj = ctx.entityToObject[event.id]
   if (!obj) return
 
-  if (position) {
-    obj.x = position.x
-    obj.y = position.y
-  }
+  if (position.x) obj.x = position.x
+  if (position.y) obj.y = position.y
 }
-
 
 export const RenderReducers = {
   Position: updatePositionReducer,

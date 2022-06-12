@@ -50,8 +50,8 @@ const processDraggableComponent = (ctx: TickContext, entity: Entity) => {
       const size = getComponent(entity, RenderComponent)?.obj?.visual?.size
 
       pos.position = {
-        x: pointerPos.x - size.width.value / 2,
-        y: pointerPos.y - size.height.value / 2,
+        x: Math.round(pointerPos.x - size.width.value / 2),
+        y: Math.round(pointerPos.y - size.height.value / 2),
       }
     }
   })

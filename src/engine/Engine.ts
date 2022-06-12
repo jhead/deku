@@ -142,6 +142,7 @@ export class Engine {
   private logTickStats = (stats: TickStats) => {
     console.debug('Tick Stats', stats, {
       entityCount: Object.values(this.state.entities).length,
+      state: this.state,
     })
   }
 }
