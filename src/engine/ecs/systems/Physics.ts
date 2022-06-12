@@ -23,19 +23,6 @@ export const PhysicsSystem: System = {
     const pos = Entity.getComponent(entity, PositionComponent)
     if (!pos) return
 
-    // TODO: do this properly
-    if (
-      entity.id !== 'Pointer' &&
-      (pos.position?.x >= 800 || pos.position?.y >= 600)
-    ) {
-      ctx.api.emit({
-        type: 'CullEntity',
-        id: entity.id,
-      })
-      delete ctx.entities[entity.id]
-      return
-    }
-
     const motion = Entity.getComponent(entity, DiscreteMotionComponent)
 
     if (motion) {

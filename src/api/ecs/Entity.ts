@@ -7,7 +7,9 @@ export type Entity = {
   readonly type: 'Entity'
   readonly id: string
   readonly components: Component[]
+  readonly immortal?: boolean
 }
+
 export namespace Entity {
   export const getComponent = <T extends Component>(
     entity: Entity,
@@ -23,9 +25,9 @@ export namespace Entity {
     )
 
   export const withComponent =
-    <T extends Component>(entity: Entity, component: ComponentRef<T>) =>
-    (block: (component: T) => void) =>
-      getComponents<T>(entity, component).slice(0, 1).forEach(block)
+    <T extends Component, R>(entity: Entity, component: ComponentRef<T>) =>
+    (block: (component: T) => R): R | null =>
+      getComponents<T>(entity, component).slice(0, 1).map(block)[0]
 
   export type BaseProps = {
     obj: RenderComponent

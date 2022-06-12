@@ -14,7 +14,6 @@ const startEngine = async () => {
   })
 
   self.onmessage = ({ data }) => {
-    console.debug('worker msg: ', data)
     engine.sendCommand(data)
   }
 
