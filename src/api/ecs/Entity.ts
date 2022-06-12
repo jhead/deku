@@ -19,15 +19,15 @@ export namespace Entity {
   export const getComponents = <T extends Component>(
     entity: Entity,
     component: ComponentRef<T>,
-  ): T[] =>
-    entity.components.filterInstanceOf(
-      (comp) => comp.componentName === component.name,
-    )
+  ): T[] => (getComponentCache(entity)[component.name] || []) as T[]
 
   export const withComponent =
     <T extends Component, R>(entity: Entity, component: ComponentRef<T>) =>
-    (block: (component: T) => R): R | null =>
-      getComponents<T>(entity, component).slice(0, 1).map(block)[0]
+    (block: (component: T) => R): R | null => {
+      const comp = getComponent(entity, component)
+      if (comp) return block(comp)
+      return null
+    }
 
   export type BaseProps = {
     obj: RenderComponent
@@ -65,4 +65,25 @@ const defaultPosition: PositionComponent = {
   type: 'Component',
   componentName: 'Position',
   position: Point.Zero,
+}
+
+type ComponentCache = Record<string, Component[]>
+const componentCaches: WeakMap<Entity, ComponentCache> = new WeakMap()
+
+const getComponentCache = (entity: Entity): ComponentCache => {
+  const existing = componentCaches.get(entity)
+  if (existing) return existing
+
+  const map: ComponentCache = entity.components.reduce((map, comp) => {
+    const list = map[comp.componentName] || []
+    const res = {
+      ...map,
+      [comp.componentName]: [list, comp].flat(),
+    }
+
+    return res
+  }, {})
+
+  componentCaches.set(entity, map)
+  return map
 }
