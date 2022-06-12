@@ -17,6 +17,11 @@ const handlePutObject: EngineEventHandler<RenderEvent.PutObject> =
   (ctx) =>
   ({ id, obj }) => {
     // todo: parent
+    if (ctx.entityToObject[id]) {
+      console.warn('Object already exists with ID!', id)
+      return
+    }
+
     const pixiObject = new PixiDraw(ctx, ctx.app.stage).draw(obj)
     ctx.entityToObject[id] = pixiObject
   }

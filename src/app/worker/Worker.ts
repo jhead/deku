@@ -1,6 +1,3 @@
-import { EngineEvent } from '../../api/event/EngineEventAPI'
-import { Square } from '../../api/obj/Square'
-import { Scale } from '../../api/types/Geom'
 import { Engine } from '../../engine'
 import { StateDB } from './StateDB'
 
