@@ -25,6 +25,7 @@ const updatePositionReducer: ComponentReducer<PositionComponent> = (
   }
 }
 
+
 export const RenderReducers = {
   Position: updatePositionReducer,
 }

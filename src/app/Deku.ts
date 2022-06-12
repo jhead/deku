@@ -13,6 +13,8 @@ export const startApplication = (
   
   RenderAdapter.registerEventHandlers(ctx)
   WorkerBridge.registerEventHandlers(worker, ctx)
+
+  ctx.app.ticker.add(() => ctx.eventing.flush())
   
   ctx.app.start()
   return ctx

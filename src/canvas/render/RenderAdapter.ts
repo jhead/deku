@@ -33,9 +33,18 @@ const handleEntityUpdate: EngineEventHandler<EntityEvent.EntityUpdate> =
     delta.map(getReducer).forEach((it) => it())
   }
 
+const handleCullEntity: EngineEventHandler<EntityEvent.CullEntity> =
+  (ctx) =>
+  ({ id }) => {
+    const obj = ctx.entityToObject[id]
+    delete ctx.entityToObject[id]
+    obj?.parent?.removeChild(obj)
+  }
+
 export namespace RenderAdapter {
   export const registerEventHandlers = (ctx: AppContext) => {
     ctx.eventing.addEventListener('PutObject', handlePutObject(ctx))
     ctx.eventing.addEventListener('EntityUpdate', handleEntityUpdate(ctx))
+    ctx.eventing.addEventListener('CullEntity', handleCullEntity(ctx))
   }
 }

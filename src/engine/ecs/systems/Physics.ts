@@ -27,8 +27,15 @@ export const PhysicsSystem: System = {
     )
     if (!pos) return
 
-    // TODO: don't update entities outside viewport
-    if (pos.position.x >= 800 || pos.position.y >= 600) return
+    // TODO: do this properly
+    if (pos.position.x >= 800 || pos.position.y >= 600) {
+      ctx.api.emit({
+        type: 'CullEntity',
+        id: entity.id,
+      })
+      delete ctx.entities[entity.id]
+      return
+    }
     
     const [motion] = Entity.getComponent<DiscreteMotionComponent>(
       entity,

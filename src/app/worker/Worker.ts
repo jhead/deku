@@ -1,3 +1,4 @@
+import { EngineEvent } from '../../api/event/EngineEventAPI'
 import { Square } from '../../api/obj/Square'
 import { Scale } from '../../api/types/Geom'
 import { Engine } from '../../engine'
@@ -14,7 +15,9 @@ const startEngine = async () => {
   // TODO
   createTestEntities(engine)
 
-  engine.onEngineEvent((event) => postMessage(event))
+  engine.onEngineEvent((event) => {
+    postMessage(event)
+  })
 
   self.onmessage = ({ data }) => {
     console.debug('worker msg: ', data)
@@ -42,7 +45,7 @@ const createTestEntities = (engine: Engine) => {
         },
       }),
     })
-  }, 20)
+  }, 50)
 }
 
 startEngine()

@@ -24,5 +24,8 @@ const loadWorker = (): Worker =>
 const handleMessageFromWorker =
   (ctx: AppContext) =>
   ({ data }: MessageEvent) => {
-    ctx.eventing.emit(data.type, data)
+    const events = Array.isArray(data) ? data : [data]
+    events.forEach((event) => {
+      ctx.eventing.emit(event.type, event)
+    })
   }

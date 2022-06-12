@@ -54,7 +54,7 @@ export class Engine {
 
     this.stateIntervalRef = setInterval(
       () => this.stateStore.store(this.state),
-      250,
+      1000,
     )
     this.running = true
   }
@@ -124,6 +124,8 @@ export class Engine {
   }
 
   private logTickStats = (stats: TickStats) => {
-    console.debug('Tick Stats', stats)
+    console.debug('Tick Stats', stats, {
+      entityCount: Object.values(this.state.entities).length,
+    })
   }
 }

@@ -8,11 +8,14 @@ type BaseEvent<T extends string> = {
   type: T
 }
 
-export type EntityEvent = EntityEvent.EntityUpdate
+export type EntityEvent = EntityEvent.EntityUpdate | EntityEvent.CullEntity
 export namespace EntityEvent {
   export type EntityUpdate = BaseEvent<'EntityUpdate'> & {
     id: string
     delta: ComponentDelta[]
+  }
+  export type CullEntity = BaseEvent<'CullEntity'> & {
+    id: string
   }
 }
 
