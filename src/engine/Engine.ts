@@ -7,9 +7,9 @@ import {
   EngineEventAPI,
 } from '../api/event/EngineEventAPI'
 import { EventEmitter } from '../api/EventEmitter'
-import { CommandReducer, CommandReducers } from './cmd/CommandRedcuers'
+import { CommandReducer, CommandReducers } from './cmd/CommandReducers'
 import { AllSystems } from './ecs/systems'
-import { StateStore } from './state/StateStore'
+import { NoOpStateStore, StateStore } from './state/StateStore'
 import { Ticker } from './Ticker'
 
 type EntityMap = Record<string, Entity>
@@ -33,7 +33,7 @@ export class Engine {
   private running: boolean = false
   private stateIntervalRef: number
 
-  constructor(readonly stateStore: StateStore) {
+  constructor(readonly stateStore: StateStore = NoOpStateStore) {
     this.internalApi = new EngineEventAPI.Default((event) =>
       this.emitter.emit('Outbound', event),
     )
