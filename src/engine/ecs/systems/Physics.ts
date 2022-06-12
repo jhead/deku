@@ -1,4 +1,3 @@
-import { updatedDiff } from 'deep-object-diff'
 import {
   DiscreteMotionComponent,
   PositionComponent,
@@ -6,15 +5,6 @@ import {
 import { Entity } from '../../../api/ecs/Entity'
 import { System } from '../../../api/ecs/System'
 import { TickContext } from '../../../api/ecs/Tick'
-import { ComponentDelta } from '../../../api/event/EngineEventAPI'
-import { Point } from '../../../api/types/Geom'
-
-// TODO: move to something more centralized on the ctx?
-const entityStates: WeakMap<Entity, EntityState> = new WeakMap()
-
-type EntityState = {
-  position: Point
-}
 
 export const PhysicsSystem: System = {
   name: 'Physics',
@@ -31,34 +21,5 @@ export const PhysicsSystem: System = {
         y: pos.position.y + motion.velocity.y,
       }
     }
-
-    const isNewEntity = !entityStates.has(entity)
-
-    // TODO: move state diff and events out
-    const newState: EntityState = {
-      position: { ...pos.position },
-    }
-
-    const stateDiff: Partial<EntityState> = updatedDiff(
-      entityStates.get(entity),
-      newState,
-    )
-
-    const delta: ComponentDelta[] = []
-
-    if (isNewEntity || 'position' in stateDiff) {
-      delta.push(<ComponentDelta<PositionComponent>>{
-        componentName: 'Position',
-        position: stateDiff.position,
-      })
-    }
-
-    ctx.api.emit({
-      type: 'EntityUpdate',
-      id: entity.id,
-      delta,
-    })
-
-    entityStates.set(entity, newState)
   },
 }

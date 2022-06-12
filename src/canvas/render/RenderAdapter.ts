@@ -58,7 +58,7 @@ const handleEntityUpdate: EngineEventHandler<EntityEvent.EntityUpdate> =
 
     const getReducer = (it: ComponentDelta) => {
       const reducer = RenderReducers[it.componentName]
-      return () => reducer(ctx, event, it)
+      return reducer ? () => reducer(ctx, event, it) : () => {}
     }
 
     delta.map(getReducer).forEach((it) => it())
