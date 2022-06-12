@@ -2,13 +2,11 @@ import { EventEmitter } from '../api/EventEmitter'
 import { measure } from '../ext/Measured'
 
 export type TickStats = {
-  now: number,
+  now: number
   sinceLastTick: number
   untilNextTick: number
   targetTickTime: number
-  tickDuration: number
   avgTickDuration: number
-  scheduleLag: number
   avgLag: number
 }
 
@@ -23,7 +21,7 @@ export class Ticker {
   private readonly lastTicks: number[] = new Array(this.memory).fill(0)
   private readonly lags: number[] = new Array(this.memory).fill(0)
   private lastTickDuration: number = 0
-  private lastTick: number = Date.now()
+  private lastTick: number = performance.now()
   private running: boolean = false
 
   constructor(
@@ -52,45 +50,59 @@ export class Ticker {
   private tryEmitStats(stats: TickStats) {
     if (stats.now - this.lastStatsEmit >= this.statsEvery) {
       this.emitter.emit('stats', stats)
-      this.lastStatsEmit = Date.now()
+      this.lastStatsEmit = performance.now()
     }
   }
 
   private tick = () => {
-    const { targetTickTime, lags, lastTicks, running } = this
+    const { lastTicks, running } = this
     if (!running) return
 
-    const now = Date.now()
+    const now = performance.now()
     const sinceLastTick = now - this.lastTick
-    this.lastTick = now
+    const numTicks = Math.round(sinceLastTick / this.targetTickTime)
 
-    const scheduleLag = sinceLastTick - this.lastTickDuration
-    if (lags.length >= 50) lags.shift()
+    let ticksLeft = numTicks
+    let tickDuration: number
+    while (ticksLeft >= 0) {
+      const [_, dur] = measure(this.doTick)
+      tickDuration = dur
+      ticksLeft--
+    }
+
+    if (lastTicks.length >= this.memory) lastTicks.shift()
+    lastTicks.push(tickDuration)
+
+    const stats = this.calculateStats(now)
+
+    this.lastTick = now
+    setTimeout(this.tick, stats.untilNextTick)
+  }
+
+  private calculateStats(now: DOMHighResTimeStamp): TickStats {
+    const { lags, lastTicks, targetTickTime } = this
+    const sinceLastTick = now - this.lastTick
+
+    const scheduleLag = Math.max(0, sinceLastTick - this.lastTickDuration)
+    if (lags.length >= this.memory) lags.shift()
     lags.push(scheduleLag)
 
     const avgLag = Math.ceil(lags.reduce((a, b) => a + b) / lags.length)
 
-    const [_, tickDuration] = measure(this.doTick)
-
-    if (lastTicks.length >= 50) lastTicks.shift()
-    lastTicks.push(tickDuration)
-
     const avgTickDuration = lastTicks.reduce((a, b) => a + b) / lastTicks.length
     const untilNextTick = Math.max(
       0,
-      Math.floor(targetTickTime - avgTickDuration - avgLag),
+      targetTickTime - Math.ceil(avgTickDuration + avgLag + 1),
     )
 
     this.lastTickDuration = untilNextTick
 
-    const stats = {
+    const stats: TickStats = {
       now,
       sinceLastTick,
       untilNextTick,
       targetTickTime,
-      tickDuration,
       avgTickDuration,
-      scheduleLag,
       avgLag,
     }
 
@@ -99,6 +111,6 @@ export class Ticker {
       this.emitter.emit('slow', stats)
     }
 
-    setTimeout(this.tick, untilNextTick)
+    return stats
   }
 }
