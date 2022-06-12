@@ -46,20 +46,45 @@ export class EventEmitter<T> implements IEventEmitter<T> {
   }
 }
 
-export class EventQueue<T> extends EventEmitter<T> {
+export class EventQueue<T> {
   constructor(
     private queues: Record<string, T[]> = {},
-    handlers: Record<string, EventHandler<T>[]> = {},
-  ) {
-    super(handlers)
-  }
+    private handlers: Record<string, EventHandler<T[]>[]> = {},
+  ) {}
 
-  override emit<U extends T>(eventType: string, event: U): void {
+  emit<U extends T>(eventType: string, event: U | U[]): void {
     if (!this.queues[eventType]) {
       this.queues[eventType] = []
     }
 
-    this.queues[eventType].push(event)
+    const events = Array.isArray(event) ? event : [event]
+    this.queues[eventType].push(...events)
+  }
+
+  addEventsListener<U extends T>(
+    eventType: string,
+    handler: EventHandler<U[]>,
+  ) {
+    if (!(eventType in this.handlers)) {
+      this.handlers[eventType] = []
+    }
+
+    this.handlers[eventType].push(handler as any) // TODO
+  }
+
+  addEventListener<U extends T>(eventType: string, handler: EventHandler<U>) {
+    this.addEventsListener<U>(eventType, (events) =>
+      events.forEach((event) => handler(event)),
+    )
+  }
+
+  // TODO
+  removeEventListener<U extends T>(
+    eventType: string,
+    handler: EventHandler<U[]>,
+  ) {
+    const handlersForEvent = this.handlers[eventType] || []
+    this.handlers[eventType] = handlersForEvent.filter((it) => it !== handler)
   }
 
   flush() {
@@ -67,13 +92,14 @@ export class EventQueue<T> extends EventEmitter<T> {
     this.queues = {}
 
     Object.entries(queues).forEach(([eventType, events]) => {
-      events.forEach((event) => super.emit(eventType, event))
+      const handlersForEvent = this.handlers[eventType] || []
+      handlersForEvent.forEach((handler) => this.emitToHandler(events, handler))
     })
 
     return queues
   }
 
-  protected override emitToHandler(event: T, handler: EventHandler<T>) {
-    handler(event)
+  protected emitToHandler(events: T[], handler: EventHandler<T[]>) {
+    handler(events)
   }
 }

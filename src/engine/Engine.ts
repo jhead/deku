@@ -6,7 +6,7 @@ import {
   EngineEvent,
   EngineEventAPI,
 } from '../api/event/EngineEventAPI'
-import { EventEmitter } from '../api/EventEmitter'
+import { EventQueue } from '../api/EventEmitter'
 import { Pointer } from '../api/obj/Pointer'
 import { CommandReducer, CommandReducers } from './cmd/CommandReducers'
 import { AllSystems } from './ecs/systems'
@@ -30,7 +30,7 @@ export const emptyState = (): EngineState => ({
 export class Engine {
   private readonly systems: System[] = [...AllSystems]
   private readonly internalApi: EngineEventAPI
-  private readonly emitter: EventEmitter<EngineEvent> = new EventEmitter()
+  private readonly emitter: EventQueue<EngineEvent> = new EventQueue()
   private readonly commandQueue: EngineCommand[] = []
   private readonly ticker: Ticker
 
@@ -40,7 +40,7 @@ export class Engine {
 
   constructor(public stateStore: StateStore = NoOpStateStore) {
     this.internalApi = new EngineEventAPI.Default((event) =>
-      this.emitter.emit('Outbound', event),
+      this.emitter.emit('Outbound', [event]),
     )
 
     this.ticker = new Ticker(50, () => this.tick())
@@ -75,8 +75,8 @@ export class Engine {
     this.running = false
   }
 
-  onEngineEvent(handler: (event: EngineEvent) => void) {
-    this.emitter.addEventListener('Outbound', handler)
+  onEngineEvents(handler: (events: EngineEvent[]) => void) {
+    this.emitter.addEventsListener('Outbound', handler)
   }
 
   sendCommand(cmd: EngineCommand) {
@@ -99,6 +99,8 @@ export class Engine {
 
     this.tickCommands(ctx)
     this.tickEntities(ctx)
+
+    setTimeout(() => this.emitter.flush(), 0)
   }
 
   private tickCommands(ctx: TickContext) {
@@ -121,11 +123,11 @@ export class Engine {
     const { entities } = ctx
 
     const entitySet = Object.values(entities)
-    systems.forEach((sys) =>
+    systems.forEach((sys) => {
       entitySet.forEach((entity) => {
         sys.process(ctx, entity)
-      }),
-    )
+      })
+    })
   }
 
   private logTickStats = (stats: TickStats) => {

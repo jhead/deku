@@ -24,8 +24,6 @@ const handlePutEntity: CommandReducer<EntityCommand.PutEntity> = (
     ...entity,
     id,
   }
-
-  console.debug('put entity', entity)
 }
 
 const handleEntityInteract: CommandReducer<EntityCommand.Interact> = (

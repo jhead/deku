@@ -9,12 +9,13 @@ const startEngine = async () => {
   const stateStore = await StateDB.create()
   const engine = new Engine(stateStore)
 
-  engine.onEngineEvent((event) => {
-    postMessage(event)
+  engine.onEngineEvents((events) => {
+    postMessage(events)
   })
 
   self.onmessage = ({ data }) => {
-    engine.sendCommand(data)
+    const events = [data].flat()
+    events.forEach((event) => engine.sendCommand(event))
   }
 
   engine.start()
