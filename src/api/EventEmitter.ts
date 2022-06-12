@@ -54,7 +54,7 @@ export class EventQueue<T> extends EventEmitter<T> {
     super(handlers)
   }
 
-  override emit(eventType: string, event: T): void {
+  override emit<U extends T>(eventType: string, event: U): void {
     if (!this.queues[eventType]) {
       this.queues[eventType] = []
     }

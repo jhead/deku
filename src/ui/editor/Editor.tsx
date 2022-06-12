@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { EntityCommand } from '../../api/event/EngineEventAPI'
 import { Square } from '../../api/obj/Square'
 import { DekuContext } from '../context/DekuContext'
 
@@ -25,7 +26,7 @@ const TestButton: React.FC = () => {
   const ctx = useContext(DekuContext)
 
   const onClick = () => {
-    ctx.eventing.emit('Worker', {
+    ctx.eventing.emit<EntityCommand.PutEntity>('Worker', {
       type: 'PutEntity',
       entity: new Square({
         velocity: {
