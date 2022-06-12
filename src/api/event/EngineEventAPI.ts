@@ -42,7 +42,10 @@ export namespace EngineEventAPI {
   }
 }
 
-export type EngineCommand = EngineCommand.ResetState | EntityCommand.PutEntity
+export type EngineCommand =
+  | EngineCommand.ResetState
+  | EntityCommand.PutEntity
+  | EntityCommand.Interact
 
 export namespace EngineCommand {
   export type ResetState = BaseEvent<'ResetState'>
@@ -51,5 +54,9 @@ export namespace EngineCommand {
 export namespace EntityCommand {
   export type PutEntity = BaseEvent<'PutEntity'> & {
     entity: Omit<Entity, 'id'>
+  }
+  export type Interact = BaseEvent<'EntityInteract'> & {
+    id: string
+    event: any
   }
 }

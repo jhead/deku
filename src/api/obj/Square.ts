@@ -1,6 +1,6 @@
 import { Point, Scale, Size } from '../types/Geom'
 import { Entity } from '../ecs/Entity'
-import { RenderComponent } from '../builtin/Render'
+import { DraggableComponent, RenderComponent } from '../builtin/Render'
 
 type SquareProps = {
   size?: Size<Scale.Static>
@@ -31,6 +31,12 @@ export class Square extends Entity.Rigid {
         componentName: 'DiscreteMotion',
         velocity,
       },
+    })
+
+    this.components.push(<DraggableComponent>{
+      type: 'Component',
+      componentName: 'Draggable',
+      dragState: false,
     })
   }
 

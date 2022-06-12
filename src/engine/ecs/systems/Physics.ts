@@ -1,9 +1,7 @@
 import { updatedDiff } from 'deep-object-diff'
 import {
   DiscreteMotionComponent,
-  DiscreteMotionComponentName,
   PositionComponent,
-  PositionComponentName,
 } from '../../../api/builtin/Physics'
 import { Entity } from '../../../api/ecs/Entity'
 import { System } from '../../../api/ecs/System'
@@ -21,14 +19,14 @@ export const PhysicsSystem: System = {
   name: 'Physics',
 
   process(ctx: TickContext, entity: Entity) {
-    const [pos] = Entity.getComponent<PositionComponent>(
-      entity,
-      PositionComponentName,
-    )
+    const pos = Entity.getComponent(entity, PositionComponent)
     if (!pos) return
 
     // TODO: do this properly
-    if (pos.position.x >= 800 || pos.position.y >= 600) {
+    if (
+      entity.id !== 'Pointer' &&
+      (pos.position?.x >= 800 || pos.position?.y >= 600)
+    ) {
       ctx.api.emit({
         type: 'CullEntity',
         id: entity.id,
@@ -36,11 +34,8 @@ export const PhysicsSystem: System = {
       delete ctx.entities[entity.id]
       return
     }
-    
-    const [motion] = Entity.getComponent<DiscreteMotionComponent>(
-      entity,
-      DiscreteMotionComponentName,
-    )
+
+    const motion = Entity.getComponent(entity, DiscreteMotionComponent)
 
     if (motion) {
       pos.position = {
@@ -63,7 +58,7 @@ export const PhysicsSystem: System = {
 
     if ('position' in stateDiff) {
       delta.push(<ComponentDelta<PositionComponent>>{
-        componentName: PositionComponentName,
+        componentName: 'Position',
         position: stateDiff.position,
       })
     }

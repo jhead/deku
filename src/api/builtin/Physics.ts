@@ -1,14 +1,17 @@
-import { Component } from '../ecs/Component'
+import { Component, componentRef } from '../ecs/Component'
 import { Point } from '../types/Geom'
 
-export const PositionComponentName = 'Position'
 export type PositionComponent = Component & {
-  componentName: typeof PositionComponentName
+  componentName: 'Position'
   position: Point
 }
 
-export const DiscreteMotionComponentName = 'DiscreteMotion'
+export const PositionComponent = componentRef<PositionComponent>('Position')
+
 export type DiscreteMotionComponent = Component & {
-  componentName: typeof DiscreteMotionComponentName
+  componentName: 'DiscreteMotion'
   velocity: Point
 }
+
+export const DiscreteMotionComponent =
+  componentRef<DiscreteMotionComponent>('DiscreteMotion')

@@ -1,3 +1,4 @@
+import { PositionComponent } from '../api/builtin/Physics'
 import { Entity } from '../api/ecs/Entity'
 import { System } from '../api/ecs/System'
 import { TickContext } from '../api/ecs/Tick'
@@ -7,6 +8,7 @@ import {
   EngineEventAPI,
 } from '../api/event/EngineEventAPI'
 import { EventEmitter } from '../api/EventEmitter'
+import { Point } from '../api/types/Geom'
 import { CommandReducer, CommandReducers } from './cmd/CommandReducers'
 import { AllSystems } from './ecs/systems'
 import { NoOpStateStore, StateStore } from './state/StateStore'
@@ -18,8 +20,22 @@ export type EngineState = {
   readonly entities: EntityMap
 }
 
+const internalEntities: EntityMap = {
+  Pointer: {
+    id: 'Pointer',
+    type: 'Entity',
+    components: [
+      <PositionComponent>{
+        type: 'Component',
+        componentName: 'Position',
+        position: Point.Zero,
+      },
+    ],
+  },
+}
+
 export const emptyState = (): EngineState => ({
-  entities: {},
+  entities: { ...internalEntities },
 })
 
 export class Engine {
