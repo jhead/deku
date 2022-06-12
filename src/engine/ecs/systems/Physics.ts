@@ -10,7 +10,8 @@ import { ComponentDelta } from '../../../api/event/EngineEventAPI'
 import { Point } from '../../../api/types/Geom'
 
 // TODO: move to something more centralized on the ctx?
-const entityStates: Record<string, EntityState> = {}
+const entityStates: WeakMap<Entity, EntityState> = new WeakMap()
+
 type EntityState = {
   position: Point
 }
@@ -44,19 +45,21 @@ export const PhysicsSystem: System = {
       }
     }
 
+    const isNewEntity = !entityStates.has(entity)
+
     // TODO: move state diff and events out
     const newState: EntityState = {
       position: { ...pos.position },
     }
 
     const stateDiff: Partial<EntityState> = updatedDiff(
-      entityStates[entity.id],
+      entityStates.get(entity),
       newState,
     )
 
     const delta: ComponentDelta[] = []
 
-    if ('position' in stateDiff) {
+    if (isNewEntity || 'position' in stateDiff) {
       delta.push(<ComponentDelta<PositionComponent>>{
         componentName: 'Position',
         position: stateDiff.position,
@@ -69,6 +72,6 @@ export const PhysicsSystem: System = {
       delta,
     })
 
-    entityStates[entity.id] = newState
+    entityStates.set(entity, newState)
   },
 }
