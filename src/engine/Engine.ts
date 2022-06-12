@@ -10,7 +10,7 @@ import { EventEmitter } from '../api/EventEmitter'
 import { CommandReducer, CommandReducers } from './cmd/CommandReducers'
 import { AllSystems } from './ecs/systems'
 import { NoOpStateStore, StateStore } from './state/StateStore'
-import { Ticker } from './Ticker'
+import { Ticker, TickStats } from './Ticker'
 
 type EntityMap = Record<string, Entity>
 
@@ -23,23 +23,23 @@ export const emptyState = (): EngineState => ({
 })
 
 export class Engine {
-  private state: EngineState
   private readonly systems: System[] = [...AllSystems]
   private readonly internalApi: EngineEventAPI
   private readonly emitter: EventEmitter<EngineEvent> = new EventEmitter()
   private readonly commandQueue: EngineCommand[] = []
   private readonly ticker: Ticker
 
+  private state: EngineState
   private running: boolean = false
   private stateIntervalRef: number
 
-  constructor(readonly stateStore: StateStore = NoOpStateStore) {
+  constructor(public stateStore: StateStore = NoOpStateStore) {
     this.internalApi = new EngineEventAPI.Default((event) =>
       this.emitter.emit('Outbound', event),
     )
 
     this.ticker = new Ticker(50, () => this.tick())
-    this.ticker.onTickStats((stats) => console.debug('Tick', stats, 20 / ((stats.avgTickDuration /  Object.values(this.state.entities).length))))
+    this.ticker.onTickStats(this.logTickStats)
   }
 
   async start() {
@@ -121,5 +121,9 @@ export class Engine {
         sys.process(ctx, entity)
       }),
     )
+  }
+
+  private logTickStats = (stats: TickStats) => {
+    console.debug('Tick Stats', stats)
   }
 }
