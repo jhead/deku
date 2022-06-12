@@ -6,8 +6,9 @@ import {
 import { Entity, getComponent, withComponent } from '../../../api/ecs/Entity'
 import { System } from '../../../api/ecs/System'
 import { TickContext } from '../../../api/ecs/Tick'
+import { RenderObject } from '../../../api/types/Render'
 
-const entitySet: WeakSet<Entity> = new WeakSet()
+const entitySet: WeakSet<RenderObject> = new WeakSet()
 
 export const RenderSystem: System = {
   name: 'Render',
@@ -19,14 +20,13 @@ export const RenderSystem: System = {
 }
 
 const processRenderComponent = (ctx: TickContext, entity: Entity) => {
-  if (entitySet.has(entity)) return
-
   withComponent(
     entity,
     RenderComponent,
   )((render) => {
-    console.debug('adding obj', entity.id)
-    entitySet.add(entity)
+    if (entitySet.has(render.obj)) return
+
+    entitySet.add(render.obj)
     ctx.api.emit({
       type: 'PutObject',
       id: entity.id,

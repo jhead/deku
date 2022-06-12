@@ -5,8 +5,8 @@ import { Reaper } from './Reaper'
 import { ChangeObserver } from './ChangeObserver'
 
 export const AllSystems: readonly System[] = [
+  ChangeObserver,
   RenderSystem,
   PhysicsSystem,
   Reaper,
-  ChangeObserver,
 ]
