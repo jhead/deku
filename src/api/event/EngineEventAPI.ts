@@ -39,7 +39,11 @@ export namespace EngineEventAPI {
   }
 }
 
-export type EngineCommand = EntityCommand.PutEntity
+export type EngineCommand = EngineCommand.ResetState | EntityCommand.PutEntity
+
+export namespace EngineCommand {
+  export type ResetState = BaseEvent<'ResetState'>
+}
 
 export namespace EntityCommand {
   export type PutEntity = BaseEvent<'PutEntity'> & {

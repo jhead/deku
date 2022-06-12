@@ -1,5 +1,6 @@
 import pako from 'pako'
-import { Engine, EngineState } from '../../engine'
+import { emptyState, Engine, EngineState } from '../../engine'
+import { StateStore } from '../../engine/state/StateStore'
 
 const idbRequest = <T>(block: () => IDBRequest<T>): Promise<T> => {
   const req = block()
@@ -18,7 +19,7 @@ const idbTransaction = (block: () => IDBTransaction): Promise<any> => {
   })
 }
 
-export const connectDatabase = async (): Promise<IDBDatabase> => {
+const connectDatabase = async (): Promise<IDBDatabase> => {
   const init = async (event) => {
     console.log('Initializing new database')
 
@@ -31,6 +32,7 @@ export const connectDatabase = async (): Promise<IDBDatabase> => {
     })
   }
 
+  console.log('Opening database')
   return await idbRequest(() => {
     const req = indexedDB.open('engineState')
     req.onupgradeneeded = init
@@ -38,28 +40,28 @@ export const connectDatabase = async (): Promise<IDBDatabase> => {
   })
 }
 
-export const getStateStore = (db: IDBDatabase): IDBObjectStore =>
+const getStateObjectStore = (db: IDBDatabase): IDBObjectStore =>
   db.transaction('state', 'readwrite').objectStore('state')
 
-export const loadEngineState = async (
-  db: IDBDatabase,
-): Promise<EngineState> => {
-  const [rawExistingState] = await idbRequest(() => getStateStore(db).getAll())
+const loadEngineState = async (db: IDBDatabase): Promise<EngineState> => {
+  const [rawExistingState] = await idbRequest(() =>
+    getStateObjectStore(db).getAll(),
+  )
 
-  console.debug('Raw state size', rawExistingState.length)
+  console.debug('Raw state size', rawExistingState?.size)
 
   const initialState = rawExistingState
-    ? decodeState(rawExistingState)
-    : undefined
+    ? await decodeState(rawExistingState)
+    : emptyState()
 
   console.log('Initial engine state', initialState)
 
   return initialState
 }
 
-const decodeState = (raw: Uint8Array): EngineState | undefined => {
+const decodeState = async (raw: Blob): Promise<EngineState | undefined> => {
   try {
-    const inflatedBytes = pako.inflate(raw)
+    const inflatedBytes = pako.inflate(await raw.arrayBuffer())
     const asJson = new TextDecoder().decode(inflatedBytes)
     return JSON.parse(asJson)
   } catch (err) {
@@ -68,16 +70,38 @@ const decodeState = (raw: Uint8Array): EngineState | undefined => {
   }
 }
 
-const encodeState = (state: EngineState): Uint8Array => {
+const encodeState = (state: EngineState): Blob => {
   const asJson = JSON.stringify(state)
-  const inputBytes = new TextEncoder().encode(asJson)
-  return pako.deflate(inputBytes)
+  const bytes = pako.deflate(asJson)
+  return new Blob([bytes])
 }
 
-export const storeEngineState = async (
+const storeEngineState = async (
   db: IDBDatabase,
-  engine: Engine,
+  state: EngineState,
 ): Promise<any> =>
-  idbRequest(() =>
-    getStateStore(db).put(encodeState(engine.currentState), 'state'),
-  )
+  idbRequest(() => getStateObjectStore(db).put(encodeState(state), 'state'))
+
+const clearEngineState = async (db: IDBDatabase): Promise<void> => {
+  await storeEngineState(db, emptyState())
+}
+
+export class StateDB implements StateStore {
+  constructor(private readonly db: IDBDatabase) {}
+
+  static async create(): Promise<StateDB> {
+    return new StateDB(await connectDatabase())
+  }
+
+  async load(): Promise<EngineState> {
+    return await loadEngineState(this.db)
+  }
+
+  async store(state: EngineState): Promise<void> {
+    return await storeEngineState(this.db, state)
+  }
+
+  async clear(): Promise<void> {
+    return await clearEngineState(this.db)
+  }
+}

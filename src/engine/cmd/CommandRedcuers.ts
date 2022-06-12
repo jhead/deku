@@ -1,25 +1,35 @@
 import { TickContext } from '../../api/ecs/Tick'
 import { EngineCommand, EntityCommand } from '../../api/event/EngineEventAPI'
+import uuid from 'short-uuid'
 
-type CommandReducer<T extends EngineCommand> = (
+export type CommandReducer<T extends EngineCommand> = (
   ctx: TickContext,
   cmd: T,
 ) => void
 
-let globalEntityId = 0
 const handlePutEntity: CommandReducer<EntityCommand.PutEntity> = (
   ctx,
   { entity },
 ) => {
+  const id = uuid.generate()
 
-  ctx.entities[`${++globalEntityId}`] = {
+  ctx.entities[id] = {
     ...entity,
-    id: `${globalEntityId}`,
+    id,
   }
 
   console.debug('put entity', entity)
 }
 
+const handleResetState: CommandReducer<EngineCommand.ResetState> = (
+  ctx,
+  _,
+) => {
+  ctx.engine.stop()
+  ctx.engine.stateStore.clear()
+}
+
 export const CommandReducers = {
   PutEntity: handlePutEntity,
+  ResetState: handleResetState,
 }

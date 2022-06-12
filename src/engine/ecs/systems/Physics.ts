@@ -27,6 +27,9 @@ export const PhysicsSystem: System = {
     )
     if (!pos) return
 
+    // TODO: don't update entities outside viewport
+    if (pos.position.x >= 800 || pos.position.y >= 600) return
+    
     const [motion] = Entity.getComponent<DiscreteMotionComponent>(
       entity,
       DiscreteMotionComponentName,
